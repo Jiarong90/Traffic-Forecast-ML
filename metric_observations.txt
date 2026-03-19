@@ -1,0 +1,86 @@
+Traffic ML Documentation
+
+split_ts = max_ts - 2 * 86400
+
+
+TRAIN_SAMPLE_FRAC = 0.1
+TEST_SAMPLE_FRAC = 0.1
+
+Results:
+Model acc = 0.6340 within1 = 0.9321 MAE = 0.4531
+Persistence acc=0.6290 within1=0.9276 MAE=0.4644
+Change-rows accuracy: model=0.0481 | persistence=0.0000
+
+With X_train = train_df[["sb", "sb_tm5", "sb_tm10", "sb_tm15"]]
+
+X_test = test_df[["sb", "sb_tm5", "sb_tm10", "sb_tm15"]]
+
+T+30: 
+Results:
+Model acc = 0.6384 within1 = 0.9375 MAE = 0.4412
+Persistence acc=0.6290 within1=0.9276 MAE=0.4644
+Change-rows accuracy: model=0.0960 | persistence=0.0000
+
+
+Results: Model acc = 0.6024 within1 = 0.9245 MAE = 0.4958 Persistence acc=0.5924 within1=0.9159 MAE=0.5180 Change-rows accuracy: model=0.0791 | persistence=0.0000
+
+t+15 with dow + hour without road_category
+Results:
+Model acc = 0.6342 within1 = 0.9325 MAE = 0.4524
+Persistence acc=0.6290 within1=0.9276 MAE=0.4644
+Change-rows accuracy: model=0.0530 | persistence=0.0000
+
+t+15 with dow + hour + road_category
+Results:
+Model acc = 0.6358 within1 = 0.9334 MAE = 0.4495
+Persistence acc=0.6290 within1=0.9276 MAE=0.4644
+Change-rows accuracy: model=0.0600 | persistence=0.0000
+
+T+15 without dow, hour, road_category
+Results:
+Model acc = 0.6384 within1 = 0.9376 MAE = 0.4411
+Persistence acc=0.6290 within1=0.9276 MAE=0.4644
+Change-rows accuracy: model=0.0968 | persistence=0.0000
+
+T+15 without dow, hour, with road_category
+Results:
+Model acc = 0.6409 within1 = 0.9379 MAE = 0.4381
+Persistence acc=0.6290 within1=0.9276 MAE=0.4644
+Change-rows accuracy: model=0.1073 | persistence=0.0000
+
+
+T+15 with dow, hour, road_category, converted to SG time
+Results:
+Model acc = 0.6376 within1 = 0.9353 MAE = 0.4450
+Persistence acc=0.6290 within1=0.9276 MAE=0.4644
+Change-rows accuracy: model=0.0842 | persistence=0.0000
+
+T+15 with road_category, mid_lat, mid_lon without dow, hour
+Results:
+Model acc = 0.6426 within1 = 0.9391 MAE = 0.4350
+Persistence acc=0.6290 within1=0.9276 MAE=0.4644
+Change-rows accuracy: model=0.1257 | persistence=0.0000
+
+T+15 with road_category, lat_bin, lon_bin
+Results:
+Model acc = 0.6424 within1 = 0.9390 MAE = 0.4353
+Persistence acc=0.6290 within1=0.9276 MAE=0.4644
+Change-rows accuracy: model=0.1234 | persistence=0.0000
+
+T+15 with road_category, dow, hour, mid_lat, mid_lon
+Results:
+Model acc = 0.6399 within1 = 0.9364 MAE = 0.4412
+Persistence acc=0.6290 within1=0.9276 MAE=0.4644
+Change-rows accuracy: model=0.0956 | persistence=0.0000
+
+
+
+--- ISOLATED INCIDENT PERFORMANCE ---
+Total incident snapshots in test set: 5356
+Accuracy DURING incidents: Model = 0.6117 | Persistence = 0.6184
+Results:
+Model acc = 0.6426 within1 = 0.9390 MAE = 0.4352
+Persistence acc=0.6290 within1=0.9276 MAE=0.4644
+Change-rows accuracy: model=0.1281 | persistence=0.0000
+
+
