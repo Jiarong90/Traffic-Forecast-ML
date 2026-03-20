@@ -7,8 +7,8 @@ Pipeline 1 - one model predicts all - roads with changing speedbands and roads w
 The best results achieved was 64% accuracy with 12% recall on actual changed rows, over 62% persistence baseline
 
 Pipeline 2 - 3-stage pipeline - 3 task is decomposed into 3 stages. 
-1. Gatekeeper - predicts if changes will occur. Recall is 80%, precision 50%
-2. Router - predicts the direction of the change. 80% accuracy
+1. Gatekeeper - predicts if changes will occur. Recall is 83%, precision 50%
+2. Router - predicts the direction of the change. 80% accuracy for true changed rows
 3. Specialist models - Ascent Specialist and Descent Specialist. Predicts the magnitude of change for specified direction.
 
 **Results from this pipeline:**
