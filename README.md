@@ -49,7 +49,11 @@ Built using DuckDB and combining parquet files on 21-day window. Fuse all data t
 Chronological 80/20 to prevent data leakage
 
 **Model Setup**
+
 Gatekeeper - binary:logistic y_tp15 != sb
+
 Router - binary:logistic y_tp15 < sb
+
 Descent Specialist - reg:squarederror max(sb - y_tp15, 0)
+
 Ascent Specialist - reg:squarederror max(y_tp15 - sb, 0)
