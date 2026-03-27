@@ -20,12 +20,13 @@ INC_NEAR = "incident_nearby_buckets_200m.parquet"
 ROAD_LINKS = "road_links.parquet"
 GK_PARQUET = "gatekeeper_test_predictions.parquet"
 
-
+# Fetch earliest and oldest ts record from master feature table
 min_ts, max_ts = con.execute(f"""
     SELECT MIN(snapshot_ts), MAX(snapshot_ts)
     FROM read_parquet('{FEAT}')
 """).fetchone()
 
+# Split the data chronologically, 80-20 train-test split
 split_ts = min_ts + int(0.8 * (max_ts - min_ts))
 TRAIN_SAMPLE_FRAC = 0.1
 

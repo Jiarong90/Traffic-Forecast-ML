@@ -19,14 +19,17 @@ con = duckdb.connect()
 INC_NEAR = r"C:/Users/Admin/Desktop/Sugarcane/UNI/Y2 Sem 1/FYP/Traffic Forecast Project/ML/incident_nearby_buckets_200m.parquet"
 ROAD_LINKS = r"C:/Users/Admin/Desktop/Sugarcane/UNI/Y2 Sem 1/FYP/Traffic Forecast Project/ml/road_links.parquet"
 
+# Fetch earliest and oldest ts record from master feature table
 min_ts, max_ts = con.execute(f"""
     SELECT MIN(snapshot_ts), MAX(snapshot_ts)
     FROM read_parquet('{FEAT}')
 """).fetchone()
 
+# Split the data chronologically, 80-20 train-test split
 split_ts = min_ts + int(0.8 * (max_ts - min_ts))
 TRAIN_SAMPLE_FRAC = 0.1
 
+# Join tables and sample data
 train_df = con.execute(f"""
     SELECT
         f.*,
@@ -80,7 +83,6 @@ for df in (train_df, test_df):
         (df["start_lon"] - df["end_lon"])**2
     )
 
-
     # Add the time context
     df["is_weekend"] = df["dow_sg"].isin([0, 6]).astype(int)
     df["is_peak"] = df["hour_sg"].isin([7, 8, 9, 17, 18, 19]).astype(int)
@@ -100,13 +102,19 @@ features = [
 X_train = train_df[features]
 X_test  = test_df[features]
 
+# Safety check for missing values
 print(train_df.columns.tolist())
 missing = [c for c in features if c not in train_df.columns]
 print("Missing features:", missing)
 
-
+# Define the target variable 
+# If Speedband at T+15 is different from current Speedband
+# It is labeled 1 (changed). If there is no change, then label is 0.
 y_train = (train_df["y_tp15"].astype(int) != train_df["sb"].astype(int)).astype(np.int32)
 y_test  = (test_df["y_tp15"].astype(int) != test_df["sb"].astype(int)).astype(np.int32)
+
+print(f"Gatekeeper training rows: {len(train_df):,}")
+print(f"Gatekeeper testing rows: {len(test_df):,}")
 
 print("Train incident_nearby rate:", train_df["incident_nearby"].mean(), "rows:", (train_df["incident_nearby"]==1).sum())
 print("Test incident_nearby rate:", test_df["incident_nearby"].mean(), "rows:", (test_df["incident_nearby"]==1).sum())
@@ -148,6 +156,7 @@ params = {
     "eval_metric": "logloss",
 }
 
+# Train the model for 465 epochs
 bst = xgb.train(params, dtrain, num_boost_round=465)
 
 del train_df
@@ -165,7 +174,8 @@ pred = (pred_prob >= 0.25).astype(np.int32)
 y_true = y_test_np
 y_pred = pred
 
-print("\n--- Do a threshold sweep to get best threshold ---")
+# Check recall/precision for thresholds to see which one is the better trade-off
+print("\n-- Do a threshold sweep to get best threshold --")
 for t in [0.2, 0.25, 0.3, 0.35, 0.4, 0.45, 0.5]:
     t_pred = (pred_prob >= t).astype(int)
     r = recall_score(y_true, t_pred)
@@ -252,7 +262,7 @@ test_df["is_tp"] = ((test_df["gk_pred_25"] == 1) & (test_df["true_change"] == 1)
 # print("Saved to Parquet")
 
 
-bst.save_model("gatekeeper.json")
+# bst.save_model("gatekeeper.json")
 
 
 bst.feature_names = features
